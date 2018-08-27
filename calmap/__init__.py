@@ -21,7 +21,11 @@ _matplotlib_version = matplotlib.__version__
 
 
 __version_info__ = ('0', '0', '6')
+
 __version__ = '.'.join(__version_info__)
+__author__ = 'Martijn Vermaat'
+__contact__ = 'martijn@vermaat.name'
+__homepage__ = 'https://github.com/martijnvermaat/calmap'
 
 
 

@@ -5,7 +5,6 @@ Plot Pandas time series data sampled by day in a heatmap per calendar year,
 similar to GitHub's contributions calendar.
 """
 
-
 from __future__ import unicode_literals
 
 import calendar
@@ -15,18 +14,15 @@ from matplotlib.colors import ColorConverter, ListedColormap
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from distutils.version import StrictVersion
-
-__version_info__ = ('0', '0', '7', 'dev')
-__date__ = '14 Feb 2016'
+import matplotlib
 
 
+_matplotlib_version = matplotlib.__version__
+
+
+__version_info__ = ('0', '0', '6')
 __version__ = '.'.join(__version_info__)
-__author__ = 'Martijn Vermaat'
-__contact__ = 'martijn@vermaat.name'
-__homepage__ = 'https://github.com/martijnvermaat/calmap'
 
-_pandas_18 = StrictVersion(pd.__version__) >= StrictVersion('0.18')
 
 
 def yearplot(data, year=None, how='sum', vmin=None, vmax=None, cmap='Reds',
@@ -127,10 +123,7 @@ def yearplot(data, year=None, how='sum', vmin=None, vmax=None, cmap='Reds',
         by_day = data
     else:
         # Sample by day.
-        if _pandas_18:
-            by_day = data.resample('D').agg(how)
-        else:
-            by_day = data.resample('D', how=how)
+        by_day = data.resample('D', how=how)
 
     # Min and max per day.
     if vmin is None:
@@ -148,7 +141,10 @@ def yearplot(data, year=None, how='sum', vmin=None, vmax=None, cmap='Reds',
         # of course won't work when the axes itself has a transparent
         # background so in that case we default to white which will usually be
         # the figure or canvas background color.
-        linecolor = ax.get_axis_bgcolor()
+        if _matplotlib_version >= '1.5':
+            linecolor = ax.get_facecolor()
+        else:
+            linecolor = ax.get_axis_bgcolor()
         if ColorConverter().to_rgba(linecolor)[-1] == 0:
             linecolor = 'white'
 
@@ -296,10 +292,7 @@ def calendarplot(data, how='sum', yearlabels=True, yearascending=True, yearlabel
     if how is None:
         by_day = data
     else:
-        if _pandas_18:
-            by_day = data.resample('D').agg(how)
-        else:
-            by_day = data.resample('D', how=how)
+        by_day = data.resample('D', how=how)
 
     ylabel_kws = dict(
         fontsize=32,
@@ -327,3 +320,4 @@ def calendarplot(data, how='sum', yearlabels=True, yearascending=True, yearlabel
     plt.tight_layout()
 
     return fig, axes
+
